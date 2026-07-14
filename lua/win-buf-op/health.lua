@@ -17,7 +17,8 @@ function M.check()
   end
 
   if
-    type(mod.close_extended_window) == 'function'
+    type(mod.alternate_buffer) == 'function'
+    and type(mod.close_extended_window) == 'function'
     and type(mod.history) == 'function'
     and type(mod.jump) == 'function'
     and type(mod.last_edit_window) == 'function'
@@ -25,6 +26,7 @@ function M.check()
     and type(mod.next_buffer) == 'function'
     and type(mod.previous_buffer) == 'function'
     and type(mod._record) == 'function'
+    and type(mod._record_alternate_buffer) == 'function'
   then
     health_ok 'module loaded: public API and _record() available'
   else
@@ -37,6 +39,7 @@ function M.check()
     '<Plug>(win-buf-op-close-ext)',
     '<Plug>(win-buf-op-bnext)',
     '<Plug>(win-buf-op-bprev)',
+    '<Plug>(win-buf-op-balt)',
   }
   for _, mapping in ipairs(mappings) do
     local map = vim.fn.maparg(mapping, 'n')
@@ -47,11 +50,11 @@ function M.check()
     end
   end
 
-  -- Check if augroup exists
-  if vim.fn.exists '#WinBufOp#WinLeave' == 1 then
-    health_ok 'WinBufOp autocommand is active'
+  -- Check if autocommands exist
+  if vim.fn.exists '#WinBufOp#WinLeave' == 1 and vim.fn.exists '#WinBufOp#BufLeave' == 1 then
+    health_ok 'WinBufOp autocommands are active'
   else
-    health_warn 'WinBufOp augroup not found'
+    health_warn 'WinBufOp autocommands not found'
   end
 end
 

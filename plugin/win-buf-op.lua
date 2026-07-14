@@ -13,6 +13,14 @@ vim.api.nvim_create_autocmd('WinLeave', {
   end,
 })
 
+vim.api.nvim_create_autocmd('BufLeave', {
+  group = group,
+  desc = 'Record alternate edit buffer position for win-buf-op.nvim',
+  callback = function()
+    require('win-buf-op')._record_alternate_buffer()
+  end,
+})
+
 ---<Plug> mapping: toggle between the current window and the latest opposite type.
 ---Map it in your config, e.g.:
 ---  vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
@@ -37,3 +45,10 @@ end, { desc = 'win-buf-op: next buffer' })
 vim.keymap.set('n', '<Plug>(win-buf-op-bprev)', function()
   require('win-buf-op').previous_buffer()
 end, { desc = 'win-buf-op: previous buffer' })
+
+---<Plug> mapping: switch to the alternate edit buffer.
+---Map it in your config, e.g.:
+---  vim.keymap.set('n', '<C-Tab>', '<Plug>(win-buf-op-balt)')
+vim.keymap.set('n', '<Plug>(win-buf-op-balt)', function()
+  require('win-buf-op').alternate_buffer()
+end, { desc = 'win-buf-op: alternate buffer' })

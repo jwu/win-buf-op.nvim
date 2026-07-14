@@ -53,9 +53,11 @@ The project targets:
 - normal: `<Plug>(win-buf-op-close-ext)`
 - normal: `<Plug>(win-buf-op-bnext)`
 - normal: `<Plug>(win-buf-op-bprev)`
+- normal: `<Plug>(win-buf-op-balt)`
 
 Lua API:
 
+- `require('win-buf-op').alternate_buffer()`
 - `require('win-buf-op').close_extended_window()`
 - `require('win-buf-op').history()`
 - `require('win-buf-op').jump()`
@@ -67,6 +69,7 @@ Lua API:
 Internal/test-facing API:
 
 - `_record(win)`
+- `_record_alternate_buffer()`
 
 ## Working rules
 

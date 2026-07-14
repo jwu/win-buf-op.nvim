@@ -54,15 +54,20 @@ does not force-close modified buffers or exclude tree/explorer windows.
 extended window to the latest edit window, then run :bnext! or :bprevious!.
 They use Vim's listed-buffer navigation and may enter any listed buffer.
 
+<Plug>(win-buf-op-balt) only runs from an edit window. It prefers the native
+alternate buffer, restores its last recorded cursor position, and otherwise
+wraps through listed buffers.
+
 ==============================================================================
 USAGE                                                              *win-buf-op-usage*
 
-The plugin exposes two <Plug> mappings and Lua API:
+The plugin exposes five <Plug> mappings and Lua API:
 
 <Plug>(win-buf-op-jump)        Toggle to the latest window of the opposite type.
 <Plug>(win-buf-op-close-ext)   Close the current or latest extended window.
 <Plug>(win-buf-op-bnext)       Go to the next listed buffer.
 <Plug>(win-buf-op-bprev)       Go to the previous listed buffer.
+<Plug>(win-buf-op-balt)        Go to the alternate edit buffer.
 
 Lua API:
 >
@@ -70,6 +75,7 @@ Lua API:
     require('win-buf-op').close_extended_window()
     require('win-buf-op').next_buffer()
     require('win-buf-op').previous_buffer()
+    require('win-buf-op').alternate_buffer()
     require('win-buf-op').last_edit_window()
     require('win-buf-op').last_extended_window()
     require('win-buf-op').history()
@@ -91,12 +97,14 @@ Lua: >
     vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
     vim.keymap.set('n', '<C-l>', '<Plug>(win-buf-op-bnext)')
     vim.keymap.set('n', '<C-h>', '<Plug>(win-buf-op-bprev)')
+    vim.keymap.set('n', '<C-Tab>', '<Plug>(win-buf-op-balt)')
 <
 Vimscript: >
     nmap <leader><Tab> <Plug>(win-buf-op-jump)
     nmap <leader><Esc> <Plug>(win-buf-op-close-ext)
     nmap <C-l> <Plug>(win-buf-op-bnext)
     nmap <C-h> <Plug>(win-buf-op-bprev)
+    nmap <C-Tab> <Plug>(win-buf-op-balt)
 <
 
 Choose any key combination you prefer. <leader><Tab> is only an example.

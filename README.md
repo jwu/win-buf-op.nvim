@@ -9,6 +9,7 @@ It tracks normal windows and focusable floating windows, so it works with UI sur
 - Toggle between the current window and the most recently visited window of the opposite type
 - Close the current extended window, or the most recently visited extended window
 - Navigate listed buffers from an extended window through the last edit window
+- Switch to the alternate edit buffer and restore its recorded cursor position
 - Treats empty `buftype` buffers as editing windows and non-empty `buftype` buffers as extended windows
 - Tracks focusable floating windows such as `snacks.nvim` explorer
 - Skips closed windows and falls back to the previous valid window of the opposite type
@@ -53,13 +54,14 @@ For local development:
 
 ## Usage
 
-The plugin does not create a default keybinding. It exposes one `<Plug>` mapping for you to map:
+The plugin does not create default keybindings. It exposes `<Plug>` mappings for you to map:
 
 ```lua
 vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
 vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
 vim.keymap.set('n', '<C-l>', '<Plug>(win-buf-op-bnext)')
 vim.keymap.set('n', '<C-h>', '<Plug>(win-buf-op-bprev)')
+vim.keymap.set('n', '<C-Tab>', '<Plug>(win-buf-op-balt)')
 ```
 
 You can also call the Lua API directly:
@@ -71,6 +73,7 @@ win_buf_op.jump()
 win_buf_op.close_extended_window()
 win_buf_op.next_buffer()
 win_buf_op.previous_buffer()
+win_buf_op.alternate_buffer()
 local last_edit_win = win_buf_op.last_edit_window()
 local last_extended_win = win_buf_op.last_extended_window()
 local recorded_wins = win_buf_op.history() -- oldest to newest
@@ -84,8 +87,11 @@ the latest recorded editing window ID, or `nil` when none exists.
 or the latest valid recorded extended window when the current window is an edit
 window. It does not force-close modified buffers. `next_buffer()` and
 `previous_buffer()` use `:bnext!` and `:bprevious!`; from an extended window,
-they first move to the latest edit window. `history()` returns an independent
-snapshot of valid recorded window IDs, ordered from oldest to newest.
+they first move to the latest edit window. `alternate_buffer()` only operates
+from an edit window: it prefers the native alternate buffer, restores its last
+recorded cursor position, and otherwise wraps through listed buffers. `history()`
+returns an independent snapshot of valid recorded window IDs, ordered from oldest
+to newest.
 
 ## Health check
 

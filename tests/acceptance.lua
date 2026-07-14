@@ -22,6 +22,9 @@ assert(bnext_plug_map ~= '', '<Plug>(win-buf-op-bnext) should be registered')
 local bprev_plug_map = vim.fn.maparg('<Plug>(win-buf-op-bprev)', 'n')
 assert(bprev_plug_map ~= '', '<Plug>(win-buf-op-bprev) should be registered')
 
+local balt_plug_map = vim.fn.maparg('<Plug>(win-buf-op-balt)', 'n')
+assert(balt_plug_map ~= '', '<Plug>(win-buf-op-balt) should be registered')
+
 local win_buf_op = reset_module()
 vim.cmd 'silent! only'
 local current = vim.api.nvim_get_current_win()
@@ -30,6 +33,27 @@ assert_equal(
   vim.api.nvim_get_current_win(),
   current,
   'jump should do nothing when no window has been recorded'
+)
+
+win_buf_op = reset_module()
+vim.cmd 'silent! only'
+local alternate_buf = vim.api.nvim_get_current_buf()
+vim.api.nvim_buf_set_lines(alternate_buf, 0, -1, false, { 'first', 'second' })
+vim.api.nvim_win_set_cursor(0, { 2, 0 })
+vim.cmd 'enew!'
+local second_edit_buf = vim.api.nvim_get_current_buf()
+vim.api.nvim_buf_set_lines(second_edit_buf, 0, -1, false, { 'replacement' })
+assert_equal(vim.fn.bufnr '#', alternate_buf, 'alternate buffer should be the previous edit buffer')
+win_buf_op.alternate_buffer()
+assert_equal(
+  vim.api.nvim_get_current_buf(),
+  alternate_buf,
+  'alternate_buffer should switch to the previous edit buffer'
+)
+assert_equal(
+  vim.api.nvim_win_get_cursor(0)[1],
+  2,
+  'alternate_buffer should restore the recorded cursor position'
 )
 
 vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')

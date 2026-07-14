@@ -1,5 +1,7 @@
 ---@class win-buf-op
 ---@field _record fun(win: integer)
+---@field _record_alternate_buffer fun()
+---@field alternate_buffer fun()
 ---@field close_extended_window fun()
 ---@field history fun(): integer[]
 ---@field jump fun()
@@ -14,6 +16,9 @@ local HISTORY_LIMIT = 20
 ---Most recently visited jump candidates.
 ---@type integer[]
 local history = {}
+
+local alternate_edit_bufnr = -1
+local alternate_edit_bufpos = {}
 
 ---@param win integer
 local function remove_from_history(win)
@@ -62,6 +67,26 @@ end
 ---@return boolean
 local function is_extended(win)
   return vim.bo[vim.api.nvim_win_get_buf(win)].buftype ~= ''
+end
+
+---@param buf integer
+---@return boolean
+local function is_edit_buffer(buf)
+  return buf > 0
+    and vim.api.nvim_buf_is_valid(buf)
+    and vim.bo[buf].buflisted
+    and vim.api.nvim_buf_is_loaded(buf)
+    and vim.bo[buf].buftype == ''
+end
+
+---Record the current edit buffer and cursor position before it is left.
+function M._record_alternate_buffer()
+  local current_win = vim.api.nvim_get_current_win()
+  local current_buf = vim.api.nvim_get_current_buf()
+  if should_track(current_win) and is_edit_buffer(current_buf) then
+    alternate_edit_bufnr = current_buf
+    alternate_edit_bufpos = vim.fn.getpos '.'
+  end
 end
 
 local function remove_invalid_windows()
@@ -176,6 +201,48 @@ end
 ---Switch to the previous listed buffer, leaving an extended window first.
 function M.previous_buffer()
   navigate_buffer 'bprevious'
+end
+
+---Switch to the alternate edit buffer and restore its recorded cursor position.
+function M.alternate_buffer()
+  local current_win = vim.api.nvim_get_current_win()
+  if should_track(current_win) and is_extended(current_win) then
+    vim.notify(
+      'win-buf-op: alternate buffer is unavailable in an extended window',
+      vim.log.levels.WARN
+    )
+    return
+  end
+
+  local alternate_buf = vim.fn.bufnr '#'
+  if is_edit_buffer(alternate_buf) then
+    -- Switching buffers triggers BufLeave and overwrites this state.
+    local recorded_buf = alternate_edit_bufnr
+    local recorded_pos = vim.deepcopy(alternate_edit_bufpos)
+    vim.cmd('silent buffer! ' .. alternate_buf)
+
+    if alternate_buf == recorded_buf then
+      pcall(vim.fn.setpos, '.', recorded_pos)
+    end
+    return
+  end
+
+  local current_buf = vim.api.nvim_get_current_buf()
+  local last_buf = vim.fn.bufnr '$'
+  for buf = current_buf + 1, last_buf do
+    if vim.fn.buflisted(buf) == 1 then
+      vim.cmd('silent buffer! ' .. buf)
+      return
+    end
+  end
+  for buf = 0, current_buf - 1 do
+    if vim.fn.buflisted(buf) == 1 then
+      vim.cmd('silent buffer! ' .. buf)
+      return
+    end
+  end
+
+  vim.notify('win-buf-op: no listed buffer is available', vim.log.levels.WARN)
 end
 
 ---@param current_win integer
