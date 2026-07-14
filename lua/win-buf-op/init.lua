@@ -51,20 +51,29 @@ function M._record(win)
   end
 end
 
+---Return whether a window contains an extended buffer.
+---@param win integer
+---@return boolean
+local function is_extended(win)
+  return vim.bo[vim.api.nvim_win_get_buf(win)].buftype ~= ''
+end
+
 ---@param current_win integer
 ---@return integer|nil
 local function next_target(current_win)
+  local current_is_extended = is_extended(current_win)
+
   for i = #history, 1, -1 do
     local win = history[i]
     if not vim.api.nvim_win_is_valid(win) or win == current_win then
       table.remove(history, i)
-    else
+    elseif is_extended(win) ~= current_is_extended then
       return win
     end
   end
 end
 
----Jump to the last-window.
+---Jump to the most recently visited window with the opposing buffer type.
 ---Closed windows and the current window are skipped.
 function M.jump()
   local current_win = vim.api.nvim_get_current_win()

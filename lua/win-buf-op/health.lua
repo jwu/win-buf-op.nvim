@@ -23,11 +23,11 @@ function M.check()
   end
 
   -- Check if <Plug> mapping exists
-  local map = vim.fn.maparg('<Plug>(win-buf-op-toggle)', 'n')
+  local map = vim.fn.maparg('<Plug>(win-buf-op-jump)', 'n')
   if map and map ~= '' then
-    health_ok '<Plug>(win-buf-op-toggle) mapping is registered'
+    health_ok '<Plug>(win-buf-op-jump) mapping is registered'
   else
-    health_warn '<Plug>(win-buf-op-toggle) mapping not found - is plugin loaded?'
+    health_warn '<Plug>(win-buf-op-jump) mapping not found - is plugin loaded?'
   end
 
   -- Check if augroup exists

@@ -16,7 +16,7 @@ The project targets:
 - `plugin/win-buf-op.lua`
   - auto-loaded plugin entry
   - tracks windows via `WinLeave`
-  - registers `<Plug>(win-buf-op-toggle)`
+  - registers `<Plug>(win-buf-op-jump)`
 - `lua/win-buf-op/init.lua`
   - public Lua API and window history state
 - `lua/win-buf-op/health.lua`
@@ -49,7 +49,7 @@ The project targets:
 
 `<Plug>` mappings:
 
-- normal: `<Plug>(win-buf-op-toggle)`
+- normal: `<Plug>(win-buf-op-jump)`
 
 Lua API:
 

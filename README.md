@@ -1,14 +1,15 @@
 # win-buf-op.nvim
 
-A tiny Neovim plugin for jumping back to the last visited window.
+A tiny Neovim plugin for toggling between normal editing windows and extended windows.
 
-It tracks normal windows and focusable floating windows, so it works with UI surfaces like `snacks.nvim` explorer while ignoring non-focusable popup windows.
+It tracks normal windows and focusable floating windows, so it works with UI surfaces like `snacks.nvim` explorer while ignoring non-focusable popup windows. A buffer with an empty `buftype` is an editing window; every non-empty `buftype`, including `help`, `nofile`, `prompt`, `quickfix`, and `terminal`, is an extended window.
 
 ## Features
 
-- Toggle between the current window and the last visited window
+- Toggle between the current window and the most recently visited window of the opposite type
+- Treats empty `buftype` buffers as editing windows and non-empty `buftype` buffers as extended windows
 - Tracks focusable floating windows such as `snacks.nvim` explorer
-- Skips closed windows and falls back to the previous valid window
+- Skips closed windows and falls back to the previous valid window of the opposite type
 - Ignores non-focusable popups such as transient hover/completion windows
 - Provides a `<Plug>` mapping for user-defined keybindings
 - Provides `:checkhealth win-buf-op`
@@ -26,7 +27,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   'jwu/win-buf-op.nvim',
   lazy = false,
   config = function()
-    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)', {
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)', {
       desc = 'Toggle to last window',
     })
   end,
@@ -41,7 +42,7 @@ For local development:
   name = 'win-buf-op.nvim',
   lazy = false,
   config = function()
-    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)', {
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)', {
       desc = 'Toggle to last window',
     })
   end,
@@ -53,7 +54,7 @@ For local development:
 The plugin does not create a default keybinding. It exposes one `<Plug>` mapping for you to map:
 
 ```lua
-vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)')
+vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
 ```
 
 You can also call the Lua API directly:

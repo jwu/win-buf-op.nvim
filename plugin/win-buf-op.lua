@@ -13,9 +13,9 @@ vim.api.nvim_create_autocmd('WinLeave', {
   end,
 })
 
----<Plug> mapping: toggle between the current window and the last-window.
+---<Plug> mapping: toggle between the current window and the latest opposite type.
 ---Map it in your config, e.g.:
----  vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)')
-vim.keymap.set('n', '<Plug>(win-buf-op-toggle)', function()
+---  vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
+vim.keymap.set('n', '<Plug>(win-buf-op-jump)', function()
   require('win-buf-op').jump()
-end, { desc = 'win-buf-op: toggle between current and last window' })
+end, { desc = 'win-buf-op: toggle to latest opposite window type' })

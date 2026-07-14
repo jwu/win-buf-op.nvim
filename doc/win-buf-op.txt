@@ -1,4 +1,4 @@
-*win-buf-op.nvim*                   Toggle between current and last window
+*win-buf-op.nvim*             Toggle between editing and extended windows
 
 Author:   Johnny Wu <karasaya@gmail.com>
 License:  MIT
@@ -16,8 +16,8 @@ CONTENTS                                                               *win-buf-
 ==============================================================================
 INTRODUCTION                                                       *win-buf-op-intro*
 
-win-buf-op.nvim lets you quickly toggle between the current window and the
-last-window you were in, without needing to remember window numbers.
+win-buf-op.nvim lets you quickly toggle between an editing window and the most
+recent extended window, without needing to remember window numbers.
 
 It is intentionally small: there is no required setup() call and no default user
 mapping.
@@ -31,20 +31,27 @@ Tracked windows:
 - normal windows
 - focusable floating windows, such as snacks.nvim explorer
 
+A window displaying a buffer with an empty |'buftype'| is an editing window. A
+window displaying any non-empty |'buftype'|, including help, nofile, prompt,
+quickfix, and terminal, is an extended window.
+
 Ignored windows:
 - non-focusable floating/popup windows, such as transient hover or completion
   popups
 
-When jumping, closed windows and the current window are skipped. If a more
-recent recorded window has been closed, win-buf-op falls back to the previous
-valid recorded window. If no valid target exists, nothing happens.
+When jumping from an editing window, win-buf-op selects the most recently
+visited extended window. When jumping from an extended window, it selects the
+most recently visited editing window. Closed windows and the current window are
+skipped. If a more recent matching window has been closed, win-buf-op falls
+back to the previous valid matching window. If no valid target exists, nothing
+happens.
 
 ==============================================================================
 USAGE                                                              *win-buf-op-usage*
 
 The plugin exposes a single <Plug> mapping and a Lua function:
 
-<Plug>(win-buf-op-toggle)      Toggle to the last-window (if still valid).
+<Plug>(win-buf-op-jump)        Toggle to the latest window of the opposite type.
 
 Alternatively, call the Lua API directly:
 >
@@ -56,10 +63,10 @@ MAPPING                                                          *win-buf-op-map
 Add this to your Neovim config (`init.lua` or `init.vim`):
 
 Lua: >
-    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)')
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
 <
 Vimscript: >
-    nmap <leader><Tab> <Plug>(win-buf-op-toggle)
+    nmap <leader><Tab> <Plug>(win-buf-op-jump)
 <
 
 Choose any key combination you prefer. <leader><Tab> is only an example.
