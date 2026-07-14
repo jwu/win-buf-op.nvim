@@ -16,8 +16,14 @@ function M.check()
     return
   end
 
-  if type(mod.jump) == 'function' and type(mod._record) == 'function' then
-    health_ok 'module loaded: jump() and _record() available'
+  if
+    type(mod.history) == 'function'
+    and type(mod.jump) == 'function'
+    and type(mod.last_edit_window) == 'function'
+    and type(mod.last_extended_window) == 'function'
+    and type(mod._record) == 'function'
+  then
+    health_ok 'module loaded: public API and _record() available'
   else
     health_warn 'module loaded but API mismatch'
   end

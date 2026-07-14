@@ -59,9 +59,21 @@ vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
 
 You can also call the Lua API directly:
 
-```vim
-:lua require('win-buf-op').jump()
+```lua
+local win_buf_op = require 'win-buf-op'
+
+win_buf_op.jump()
+local last_edit_win = win_buf_op.last_edit_window()
+local last_extended_win = win_buf_op.last_extended_window()
+local recorded_wins = win_buf_op.history() -- oldest to newest
 ```
+
+`last_edit_window()` records the current trackable editing window, then returns
+the latest valid recorded editing window ID. From another window type, it returns
+the latest recorded editing window ID, or `nil` when none exists.
+`last_extended_window()` returns the latest valid recorded extended window ID, or
+`nil`. `history()` returns an independent snapshot of valid recorded window IDs,
+ordered from oldest to newest.
 
 ## Health check
 

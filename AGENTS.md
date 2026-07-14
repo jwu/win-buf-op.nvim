@@ -53,7 +53,10 @@ The project targets:
 
 Lua API:
 
+- `require('win-buf-op').history()`
 - `require('win-buf-op').jump()`
+- `require('win-buf-op').last_edit_window()`
+- `require('win-buf-op').last_extended_window()`
 
 Internal/test-facing API:
 

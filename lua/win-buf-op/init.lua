@@ -1,6 +1,9 @@
 ---@class win-buf-op
 ---@field _record fun(win: integer)
+---@field history fun(): integer[]
 ---@field jump fun()
+---@field last_edit_window fun(): integer|nil
+---@field last_extended_window fun(): integer|nil
 local M = {}
 
 local HISTORY_LIMIT = 20
@@ -56,6 +59,55 @@ end
 ---@return boolean
 local function is_extended(win)
   return vim.bo[vim.api.nvim_win_get_buf(win)].buftype ~= ''
+end
+
+local function remove_invalid_windows()
+  for i = #history, 1, -1 do
+    if not vim.api.nvim_win_is_valid(history[i]) then
+      table.remove(history, i)
+    end
+  end
+end
+
+---@param extended boolean
+---@return integer|nil
+local function last_window_of_type(extended)
+  for i = #history, 1, -1 do
+    local win = history[i]
+    if not vim.api.nvim_win_is_valid(win) then
+      table.remove(history, i)
+    elseif is_extended(win) == extended then
+      return win
+    end
+  end
+end
+
+---Return a copy of the valid recorded window history, ordered oldest to newest.
+---@return integer[]
+function M.history()
+  remove_invalid_windows()
+
+  local snapshot = {}
+  for i, win in ipairs(history) do
+    snapshot[i] = win
+  end
+  return snapshot
+end
+
+---Record the current editing window when applicable, then return the latest one.
+---@return integer|nil
+function M.last_edit_window()
+  local current_win = vim.api.nvim_get_current_win()
+  if should_track(current_win) and not is_extended(current_win) then
+    M._record(current_win)
+  end
+  return last_window_of_type(false)
+end
+
+---Return the most recently recorded valid extended window.
+---@return integer|nil
+function M.last_extended_window()
+  return last_window_of_type(true)
 end
 
 ---@param current_win integer

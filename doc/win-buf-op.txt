@@ -49,14 +49,24 @@ happens.
 ==============================================================================
 USAGE                                                              *win-buf-op-usage*
 
-The plugin exposes a single <Plug> mapping and a Lua function:
+The plugin exposes a single <Plug> mapping and Lua API:
 
 <Plug>(win-buf-op-jump)        Toggle to the latest window of the opposite type.
 
-Alternatively, call the Lua API directly:
+Lua API:
 >
-    :lua require('win-buf-op').jump()
+    require('win-buf-op').jump()
+    require('win-buf-op').last_edit_window()
+    require('win-buf-op').last_extended_window()
+    require('win-buf-op').history()
 <
+
+last_edit_window() records the current trackable editing window, then returns
+the latest valid recorded editing window ID. From another window type, it
+returns the latest recorded editing window ID, or nil when none exists.
+last_extended_window() returns the latest valid recorded extended window ID, or
+nil. history() returns an independent oldest-to-newest snapshot of valid
+recorded window IDs.
 ==============================================================================
 MAPPING                                                          *win-buf-op-mapping*
 

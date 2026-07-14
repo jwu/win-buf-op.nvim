@@ -1,4 +1,4 @@
--- Acceptance test: plugin autoload, <Plug> mapping, and user mapping all work together.
+-- Acceptance test: plugin autoload, public API, <Plug> mapping, and user mapping work together.
 
 local function assert_equal(actual, expected, message)
   local error_message = string.format('%s: expected %s, got %s', message, expected, actual)
@@ -25,6 +25,50 @@ assert_equal(
 
 vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
 
+win_buf_op = reset_module()
+vim.cmd 'silent! only'
+local api_edit_win = vim.api.nvim_get_current_win()
+local api_extended_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[api_extended_buf].buftype = 'nofile'
+local api_extended_win = vim.api.nvim_open_win(api_extended_buf, false, {
+  relative = 'editor',
+  row = 1,
+  col = 1,
+  width = 20,
+  height = 3,
+  style = 'minimal',
+})
+win_buf_op._record(api_extended_win)
+assert_equal(
+  win_buf_op.last_edit_window(),
+  api_edit_win,
+  'last_edit_window should record and return the current edit window'
+)
+assert_equal(
+  win_buf_op.last_extended_window(),
+  api_extended_win,
+  'last_extended_window should return the most recent valid extended window'
+)
+
+local api_history = win_buf_op.history()
+assert_equal(#api_history, 2, 'history should return all valid recorded windows')
+assert_equal(api_history[1], api_extended_win, 'history should be ordered from oldest to newest')
+api_history[1] = api_edit_win
+assert_equal(
+  win_buf_op.history()[1],
+  api_extended_win,
+  'history should return a copy rather than the internal history table'
+)
+
+vim.api.nvim_win_close(api_extended_win, true)
+assert_equal(
+  win_buf_op.last_extended_window(),
+  nil,
+  'last_extended_window should discard closed windows'
+)
+assert_equal(#win_buf_op.history(), 1, 'history should discard closed windows')
+
+win_buf_op = reset_module()
 vim.cmd 'silent! tabonly'
 vim.cmd 'silent! only'
 local edit_win = vim.api.nvim_get_current_win()
