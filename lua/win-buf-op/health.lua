@@ -22,6 +22,8 @@ function M.check()
     and type(mod.jump) == 'function'
     and type(mod.last_edit_window) == 'function'
     and type(mod.last_extended_window) == 'function'
+    and type(mod.next_buffer) == 'function'
+    and type(mod.previous_buffer) == 'function'
     and type(mod._record) == 'function'
   then
     health_ok 'module loaded: public API and _record() available'
@@ -29,12 +31,20 @@ function M.check()
     health_warn 'module loaded but API mismatch'
   end
 
-  -- Check if <Plug> mapping exists
-  local map = vim.fn.maparg('<Plug>(win-buf-op-jump)', 'n')
-  if map and map ~= '' then
-    health_ok '<Plug>(win-buf-op-jump) mapping is registered'
-  else
-    health_warn '<Plug>(win-buf-op-jump) mapping not found - is plugin loaded?'
+  -- Check if <Plug> mappings exist
+  local mappings = {
+    '<Plug>(win-buf-op-jump)',
+    '<Plug>(win-buf-op-close-ext)',
+    '<Plug>(win-buf-op-bnext)',
+    '<Plug>(win-buf-op-bprev)',
+  }
+  for _, mapping in ipairs(mappings) do
+    local map = vim.fn.maparg(mapping, 'n')
+    if map and map ~= '' then
+      health_ok(mapping .. ' mapping is registered')
+    else
+      health_warn(mapping .. ' mapping not found - is plugin loaded?')
+    end
   end
 
   -- Check if augroup exists

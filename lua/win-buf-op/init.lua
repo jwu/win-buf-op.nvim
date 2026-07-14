@@ -5,6 +5,8 @@
 ---@field jump fun()
 ---@field last_edit_window fun(): integer|nil
 ---@field last_extended_window fun(): integer|nil
+---@field next_buffer fun()
+---@field previous_buffer fun()
 local M = {}
 
 local HISTORY_LIMIT = 20
@@ -130,6 +132,50 @@ function M.close_extended_window()
   if ok or not vim.api.nvim_win_is_valid(target_win) then
     remove_from_history(target_win)
   end
+end
+
+local function goto_edit_window()
+  local target_win = M.last_edit_window()
+  if target_win and pcall(vim.api.nvim_set_current_win, target_win) then
+    return
+  end
+
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if should_track(win) and not is_extended(win) then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+
+  vim.cmd 'rightbelow vsplit'
+  vim.cmd 'enew'
+end
+
+---@param command string
+local function navigate_buffer(command)
+  local current_win = vim.api.nvim_get_current_win()
+  if should_track(current_win) and is_extended(current_win) then
+    goto_edit_window()
+  end
+
+  local ok, err = pcall(vim.cmd, command .. '!')
+  if not ok then
+    if tostring(err):match 'E85' then
+      vim.notify('win-buf-op: no listed buffer', vim.log.levels.WARN)
+      return
+    end
+    error(err)
+  end
+end
+
+---Switch to the next listed buffer, leaving an extended window first.
+function M.next_buffer()
+  navigate_buffer 'bnext'
+end
+
+---Switch to the previous listed buffer, leaving an extended window first.
+function M.previous_buffer()
+  navigate_buffer 'bprevious'
 end
 
 ---@param current_win integer

@@ -16,6 +16,12 @@ assert(jump_plug_map ~= '', '<Plug>(win-buf-op-jump) should be registered')
 local close_ext_plug_map = vim.fn.maparg('<Plug>(win-buf-op-close-ext)', 'n')
 assert(close_ext_plug_map ~= '', '<Plug>(win-buf-op-close-ext) should be registered')
 
+local bnext_plug_map = vim.fn.maparg('<Plug>(win-buf-op-bnext)', 'n')
+assert(bnext_plug_map ~= '', '<Plug>(win-buf-op-bnext) should be registered')
+
+local bprev_plug_map = vim.fn.maparg('<Plug>(win-buf-op-bprev)', 'n')
+assert(bprev_plug_map ~= '', '<Plug>(win-buf-op-bprev) should be registered')
+
 local win_buf_op = reset_module()
 vim.cmd 'silent! only'
 local current = vim.api.nvim_get_current_win()
@@ -116,6 +122,50 @@ assert_equal(
   false,
   'close_extended_window should close the last recorded extension from an edit window'
 )
+
+win_buf_op = reset_module()
+vim.cmd 'silent! only'
+local buffer_nav_edit_win = vim.api.nvim_get_current_win()
+vim.api.nvim_create_buf(true, false)
+local next_extended_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[next_extended_buf].buftype = 'nofile'
+local next_extended_win = vim.api.nvim_open_win(next_extended_buf, true, {
+  relative = 'editor',
+  row = 1,
+  col = 1,
+  width = 20,
+  height = 3,
+  style = 'minimal',
+})
+win_buf_op.next_buffer()
+assert_equal(
+  vim.api.nvim_get_current_win(),
+  buffer_nav_edit_win,
+  'next_buffer should return to the last edit window before navigating buffers'
+)
+
+local previous_extended_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[previous_extended_buf].buftype = 'nofile'
+local previous_extended_win = vim.api.nvim_open_win(previous_extended_buf, true, {
+  relative = 'editor',
+  row = 5,
+  col = 1,
+  width = 20,
+  height = 3,
+  style = 'minimal',
+})
+win_buf_op.previous_buffer()
+assert_equal(
+  vim.api.nvim_get_current_win(),
+  buffer_nav_edit_win,
+  'previous_buffer should return to the last edit window before navigating buffers'
+)
+
+for _, win in ipairs({ next_extended_win, previous_extended_win }) do
+  if vim.api.nvim_win_is_valid(win) then
+    vim.api.nvim_win_close(win, true)
+  end
+end
 
 win_buf_op = reset_module()
 vim.cmd 'silent! tabonly'
