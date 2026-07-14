@@ -17,7 +17,8 @@ function M.check()
   end
 
   if
-    type(mod.history) == 'function'
+    type(mod.close_extended_window) == 'function'
+    and type(mod.history) == 'function'
     and type(mod.jump) == 'function'
     and type(mod.last_edit_window) == 'function'
     and type(mod.last_extended_window) == 'function'

@@ -50,9 +50,11 @@ The project targets:
 `<Plug>` mappings:
 
 - normal: `<Plug>(win-buf-op-jump)`
+- normal: `<Plug>(win-buf-op-close-ext)`
 
 Lua API:
 
+- `require('win-buf-op').close_extended_window()`
 - `require('win-buf-op').history()`
 - `require('win-buf-op').jump()`
 - `require('win-buf-op').last_edit_window()`

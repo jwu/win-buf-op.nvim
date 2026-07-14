@@ -46,16 +46,22 @@ skipped. If a more recent matching window has been closed, win-buf-op falls
 back to the previous valid matching window. If no valid target exists, nothing
 happens.
 
+<Plug>(win-buf-op-close-ext) closes the current tracked extended window. From an
+editing window, it closes the most recently visited valid extended window. It
+does not force-close modified buffers or exclude tree/explorer windows.
+
 ==============================================================================
 USAGE                                                              *win-buf-op-usage*
 
-The plugin exposes a single <Plug> mapping and Lua API:
+The plugin exposes two <Plug> mappings and Lua API:
 
 <Plug>(win-buf-op-jump)        Toggle to the latest window of the opposite type.
+<Plug>(win-buf-op-close-ext)   Close the current or latest extended window.
 
 Lua API:
 >
     require('win-buf-op').jump()
+    require('win-buf-op').close_extended_window()
     require('win-buf-op').last_edit_window()
     require('win-buf-op').last_extended_window()
     require('win-buf-op').history()
@@ -74,9 +80,11 @@ Add this to your Neovim config (`init.lua` or `init.vim`):
 
 Lua: >
     vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
+    vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
 <
 Vimscript: >
     nmap <leader><Tab> <Plug>(win-buf-op-jump)
+    nmap <leader><Esc> <Plug>(win-buf-op-close-ext)
 <
 
 Choose any key combination you prefer. <leader><Tab> is only an example.

@@ -7,6 +7,7 @@ It tracks normal windows and focusable floating windows, so it works with UI sur
 ## Features
 
 - Toggle between the current window and the most recently visited window of the opposite type
+- Close the current extended window, or the most recently visited extended window
 - Treats empty `buftype` buffers as editing windows and non-empty `buftype` buffers as extended windows
 - Tracks focusable floating windows such as `snacks.nvim` explorer
 - Skips closed windows and falls back to the previous valid window of the opposite type
@@ -55,6 +56,7 @@ The plugin does not create a default keybinding. It exposes one `<Plug>` mapping
 
 ```lua
 vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-jump)')
+vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
 ```
 
 You can also call the Lua API directly:
@@ -63,6 +65,7 @@ You can also call the Lua API directly:
 local win_buf_op = require 'win-buf-op'
 
 win_buf_op.jump()
+win_buf_op.close_extended_window()
 local last_edit_win = win_buf_op.last_edit_window()
 local last_extended_win = win_buf_op.last_extended_window()
 local recorded_wins = win_buf_op.history() -- oldest to newest
@@ -72,8 +75,10 @@ local recorded_wins = win_buf_op.history() -- oldest to newest
 the latest valid recorded editing window ID. From another window type, it returns
 the latest recorded editing window ID, or `nil` when none exists.
 `last_extended_window()` returns the latest valid recorded extended window ID, or
-`nil`. `history()` returns an independent snapshot of valid recorded window IDs,
-ordered from oldest to newest.
+`nil`. `close_extended_window()` closes the current trackable extended window,
+or the latest valid recorded extended window when the current window is an edit
+window. It does not force-close modified buffers. `history()` returns an
+independent snapshot of valid recorded window IDs, ordered from oldest to newest.
 
 ## Health check
 

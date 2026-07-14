@@ -10,8 +10,11 @@ local function reset_module()
   return require 'win-buf-op'
 end
 
-local plug_map = vim.fn.maparg('<Plug>(win-buf-op-jump)', 'n')
-assert(plug_map ~= '', '<Plug>(win-buf-op-jump) should be registered')
+local jump_plug_map = vim.fn.maparg('<Plug>(win-buf-op-jump)', 'n')
+assert(jump_plug_map ~= '', '<Plug>(win-buf-op-jump) should be registered')
+
+local close_ext_plug_map = vim.fn.maparg('<Plug>(win-buf-op-close-ext)', 'n')
+assert(close_ext_plug_map ~= '', '<Plug>(win-buf-op-close-ext) should be registered')
 
 local win_buf_op = reset_module()
 vim.cmd 'silent! only'
@@ -67,6 +70,52 @@ assert_equal(
   'last_extended_window should discard closed windows'
 )
 assert_equal(#win_buf_op.history(), 1, 'history should discard closed windows')
+
+win_buf_op = reset_module()
+vim.cmd 'silent! only'
+local edit_before_close = vim.api.nvim_get_current_win()
+local fallback_extended_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[fallback_extended_buf].buftype = 'nofile'
+local fallback_extended_win = vim.api.nvim_open_win(fallback_extended_buf, false, {
+  relative = 'editor',
+  row = 1,
+  col = 1,
+  width = 20,
+  height = 3,
+  style = 'minimal',
+})
+win_buf_op._record(fallback_extended_win)
+
+local current_extended_buf = vim.api.nvim_create_buf(false, true)
+vim.bo[current_extended_buf].buftype = 'nofile'
+local current_extended_win = vim.api.nvim_open_win(current_extended_buf, true, {
+  relative = 'editor',
+  row = 5,
+  col = 1,
+  width = 20,
+  height = 3,
+  style = 'minimal',
+})
+vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
+vim.fn.feedkeys('\\\027', 'xt')
+assert_equal(
+  vim.api.nvim_win_is_valid(current_extended_win),
+  false,
+  '<leader><Esc> should close the current extended window first'
+)
+assert_equal(
+  vim.api.nvim_win_is_valid(fallback_extended_win),
+  true,
+  'close_extended_window should preserve older extended windows when current closes'
+)
+
+vim.api.nvim_set_current_win(edit_before_close)
+win_buf_op.close_extended_window()
+assert_equal(
+  vim.api.nvim_win_is_valid(fallback_extended_win),
+  false,
+  'close_extended_window should close the last recorded extension from an edit window'
+)
 
 win_buf_op = reset_module()
 vim.cmd 'silent! tabonly'

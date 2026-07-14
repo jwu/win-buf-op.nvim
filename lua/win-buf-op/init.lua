@@ -1,5 +1,6 @@
 ---@class win-buf-op
 ---@field _record fun(win: integer)
+---@field close_extended_window fun()
 ---@field history fun(): integer[]
 ---@field jump fun()
 ---@field last_edit_window fun(): integer|nil
@@ -108,6 +109,27 @@ end
 ---@return integer|nil
 function M.last_extended_window()
   return last_window_of_type(true)
+end
+
+---Close the current extended window, or the most recently recorded one.
+function M.close_extended_window()
+  local current_win = vim.api.nvim_get_current_win()
+  local target_win
+
+  if should_track(current_win) and is_extended(current_win) then
+    target_win = current_win
+  else
+    target_win = last_window_of_type(true)
+  end
+
+  if not target_win then
+    return
+  end
+
+  local ok = pcall(vim.api.nvim_win_close, target_win, false)
+  if ok or not vim.api.nvim_win_is_valid(target_win) then
+    remove_from_history(target_win)
+  end
 end
 
 ---@param current_win integer

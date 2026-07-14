@@ -19,3 +19,10 @@ vim.api.nvim_create_autocmd('WinLeave', {
 vim.keymap.set('n', '<Plug>(win-buf-op-jump)', function()
   require('win-buf-op').jump()
 end, { desc = 'win-buf-op: toggle to latest opposite window type' })
+
+---<Plug> mapping: close the current or most recently recorded extended window.
+---Map it in your config, e.g.:
+---  vim.keymap.set('n', '<leader><Esc>', '<Plug>(win-buf-op-close-ext)')
+vim.keymap.set('n', '<Plug>(win-buf-op-close-ext)', function()
+  require('win-buf-op').close_extended_window()
+end, { desc = 'win-buf-op: close extended window' })
