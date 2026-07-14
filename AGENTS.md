@@ -2,7 +2,7 @@
 
 ## Project
 
-This repository is `last-win-jump.nvim`, a small Neovim plugin written in Lua for toggling between the current window and the last visited window.
+This repository is `win-buf-op.nvim`, a small Neovim plugin written in Lua for toggling between the current window and the last visited window.
 
 The project targets:
 
@@ -13,15 +13,15 @@ The project targets:
 
 ## Key structure
 
-- `plugin/last-win-jump.lua`
+- `plugin/win-buf-op.lua`
   - auto-loaded plugin entry
   - tracks windows via `WinLeave`
-  - registers `<Plug>(last-win-jump-toggle)`
-- `lua/last-win-jump/init.lua`
+  - registers `<Plug>(win-buf-op-toggle)`
+- `lua/win-buf-op/init.lua`
   - public Lua API and window history state
-- `lua/last-win-jump/health.lua`
-  - `:checkhealth last-win-jump`
-- `doc/last-win-jump.txt`
+- `lua/win-buf-op/health.lua`
+  - `:checkhealth win-buf-op`
+- `doc/win-buf-op.txt`
   - vim help doc; keep in sync with user-visible behavior
 - `README.md`
   - user-facing overview and examples
@@ -49,11 +49,11 @@ The project targets:
 
 `<Plug>` mappings:
 
-- normal: `<Plug>(last-win-jump-toggle)`
+- normal: `<Plug>(win-buf-op-toggle)`
 
 Lua API:
 
-- `require('last-win-jump').jump()`
+- `require('win-buf-op').jump()`
 
 Internal/test-facing API:
 
@@ -67,7 +67,7 @@ Internal/test-facing API:
 - Keep plugin startup light.
 - If changing user-visible behavior, update both:
   - `README.md`
-  - `doc/last-win-jump.txt`
+  - `doc/win-buf-op.txt`
 - If changing behavior around floating windows, update tests.
 
 ## Commands

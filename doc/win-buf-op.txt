@@ -1,0 +1,75 @@
+*win-buf-op.nvim*                   Toggle between current and last window
+
+Author:   Johnny Wu <karasaya@gmail.com>
+License:  MIT
+Homepage: https://github.com/jwu/win-buf-op.nvim
+
+==============================================================================
+CONTENTS                                                               *win-buf-op*
+
+  1. Introduction .......................... |win-buf-op-intro|
+  2. Behavior .............................. |win-buf-op-behavior|
+  3. Usage ................................. |win-buf-op-usage|
+  4. Mapping ............................... |win-buf-op-mapping|
+  5. Health ................................ |win-buf-op-health|
+
+==============================================================================
+INTRODUCTION                                                       *win-buf-op-intro*
+
+win-buf-op.nvim lets you quickly toggle between the current window and the
+last-window you were in, without needing to remember window numbers.
+
+It is intentionally small: there is no required setup() call and no default user
+mapping.
+
+==============================================================================
+BEHAVIOR                                                        *win-buf-op-behavior*
+
+The plugin records windows on |WinLeave|.
+
+Tracked windows:
+- normal windows
+- focusable floating windows, such as snacks.nvim explorer
+
+Ignored windows:
+- non-focusable floating/popup windows, such as transient hover or completion
+  popups
+
+When jumping, closed windows and the current window are skipped. If a more
+recent recorded window has been closed, win-buf-op falls back to the previous
+valid recorded window. If no valid target exists, nothing happens.
+
+==============================================================================
+USAGE                                                              *win-buf-op-usage*
+
+The plugin exposes a single <Plug> mapping and a Lua function:
+
+<Plug>(win-buf-op-toggle)      Toggle to the last-window (if still valid).
+
+Alternatively, call the Lua API directly:
+>
+    :lua require('win-buf-op').jump()
+<
+==============================================================================
+MAPPING                                                          *win-buf-op-mapping*
+
+Add this to your Neovim config (`init.lua` or `init.vim`):
+
+Lua: >
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)')
+<
+Vimscript: >
+    nmap <leader><Tab> <Plug>(win-buf-op-toggle)
+<
+
+Choose any key combination you prefer. <leader><Tab> is only an example.
+
+==============================================================================
+HEALTH                                                           *win-buf-op-health*
+
+Run:
+>
+    :checkhealth win-buf-op
+<
+
+ vim:tw=78:ts=8:ft=help:norl:

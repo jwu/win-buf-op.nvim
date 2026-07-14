@@ -1,4 +1,4 @@
-# last-win-jump.nvim
+# win-buf-op.nvim
 
 A tiny Neovim plugin for jumping back to the last visited window.
 
@@ -11,7 +11,7 @@ It tracks normal windows and focusable floating windows, so it works with UI sur
 - Skips closed windows and falls back to the previous valid window
 - Ignores non-focusable popups such as transient hover/completion windows
 - Provides a `<Plug>` mapping for user-defined keybindings
-- Provides `:checkhealth last-win-jump`
+- Provides `:checkhealth win-buf-op`
 
 ## Requirements
 
@@ -23,10 +23,10 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
-  'jwu/last-win-jump.nvim',
+  'jwu/win-buf-op.nvim',
   lazy = false,
   config = function()
-    vim.keymap.set('n', '<leader><Tab>', '<Plug>(last-win-jump-toggle)', {
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)', {
       desc = 'Toggle to last window',
     })
   end,
@@ -37,11 +37,11 @@ For local development:
 
 ```lua
 {
-  dir = '~/dev/jwu/last-win-jump.nvim',
-  name = 'last-win-jump.nvim',
+  dir = '~/dev/jwu/win-buf-op.nvim',
+  name = 'win-buf-op.nvim',
   lazy = false,
   config = function()
-    vim.keymap.set('n', '<leader><Tab>', '<Plug>(last-win-jump-toggle)', {
+    vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)', {
       desc = 'Toggle to last window',
     })
   end,
@@ -53,19 +53,19 @@ For local development:
 The plugin does not create a default keybinding. It exposes one `<Plug>` mapping for you to map:
 
 ```lua
-vim.keymap.set('n', '<leader><Tab>', '<Plug>(last-win-jump-toggle)')
+vim.keymap.set('n', '<leader><Tab>', '<Plug>(win-buf-op-toggle)')
 ```
 
 You can also call the Lua API directly:
 
 ```vim
-:lua require('last-win-jump').jump()
+:lua require('win-buf-op').jump()
 ```
 
 ## Health check
 
 ```vim
-:checkhealth last-win-jump
+:checkhealth win-buf-op
 ```
 
 ## Development

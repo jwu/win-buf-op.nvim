@@ -1,4 +1,4 @@
----@class last-win-jump
+---@class win-buf-op
 ---@field _record fun(win: integer)
 ---@field jump fun()
 local M = {}

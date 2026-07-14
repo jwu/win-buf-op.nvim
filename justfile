@@ -14,10 +14,10 @@ fmt-check:
 lint:
   @command -v selene >/dev/null || { echo 'selene is required'; exit 127; }
   selene {{lua_dirs}}
-  lua -e "assert(loadfile('lua/last-win-jump/init.lua')); assert(loadfile('plugin/last-win-jump.lua'))"
+  lua -e "assert(loadfile('lua/win-buf-op/init.lua')); assert(loadfile('plugin/win-buf-op.lua'))"
 
 test:
-  nvim --headless -u NONE -c "set rtp+=." -c "lua require('last-win-jump').jump()" -c "qa!"
-  nvim --headless -u tests/minimal_init.lua -c "runtime plugin/last-win-jump.lua" -c "luafile tests/acceptance.lua" -c "qa!"
+  nvim --headless -u NONE -c "set rtp+=." -c "lua require('win-buf-op').jump()" -c "qa!"
+  nvim --headless -u tests/minimal_init.lua -c "runtime plugin/win-buf-op.lua" -c "luafile tests/acceptance.lua" -c "qa!"
 
 check: fmt-check lint test
